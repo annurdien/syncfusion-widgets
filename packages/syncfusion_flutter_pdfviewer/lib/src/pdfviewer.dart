@@ -1168,6 +1168,15 @@ class SfPdfViewerState extends State<SfPdfViewer> with WidgetsBindingObserver {
           CancelableOperation<List<dynamic>?>.fromFuture(
               _plugin.getPagesWidth());
       _originalWidth = await _getWidthCancellableOperation?.value;
+
+      // Set page height and width to controller
+      _pdfViewerController._pageHeight = await _plugin
+          .getPagesHeight()
+          .then((List<int>? height) => (height ?? <int>[]).first);
+
+      _pdfViewerController._pageWidth = await _plugin
+          .getPagesWidth()
+          .then((List<int>? width) => (width ?? <int>[]).first);
     } catch (e) {
       _pdfViewerController._reset();
       _hasError = true;
@@ -3724,6 +3733,35 @@ class PdfViewerController extends ChangeNotifier with _ValueChangeNotifier {
     _notifyPropertyChangedListeners(property: 'pageCount');
   }
 
+  /// CUSTOM
+  /// Page Size
+  int _pageHeight = 0;
+  int _pageWidth = 0;
+
+  /// Page Size Getter
+  int get pageHeight {
+    return _pageHeight;
+  }
+
+  /// Page Height Setter
+  set pageHeightSetter(int height) {
+    _pageHeight = height;
+    _notifyPropertyChangedListeners(property: 'pageHeight');
+  }
+
+  /// Page Width Getter
+  int get pageWidth {
+    return _pageWidth;
+  }
+
+  /// Page Width Setter
+  set pageWidthSetter(int width) {
+    _pageWidth = width;
+    _notifyPropertyChangedListeners(property: 'pageWidth');
+  }
+
+  /// CUSTOM
+
   /// PdfBookmark instance
   PdfBookmark? _pdfBookmark;
 
@@ -4019,6 +4057,7 @@ class PdfViewerController extends ChangeNotifier with _ValueChangeNotifier {
   ///  }
   ///}
   /// ```
+
   void jumpToBookmark(PdfBookmark bookmark) {
     _pdfBookmark = bookmark;
     _notifyPropertyChangedListeners(property: 'jumpToBookmark');
